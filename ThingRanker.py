@@ -10,6 +10,8 @@ fileName = input("File Name: ")
 with open(fileName) as f:
     inputList = f.readlines()
 
+f.close()
+
 inputList = [x.strip() for x in inputList]
 
 #-------------------------------------------------------------------------------------------
@@ -62,20 +64,37 @@ class RankedItems:
 
     def printranks(self):
         d = self.rankItemPairs
+
         print("\nCurrent Ranks:")
         s = [(k, d[k]) for k in sorted(d, key=d.get, reverse=True)]
         for k, v in s:
             print("{:d}".format(trunc(v)), k)
+
+    def writeresults(self,oFile):
+        d = self.rankItemPairs
+        f2 = open(oFile+" results.txt", "w")
+
+        s = [(k, d[k]) for k in sorted(d, key=d.get, reverse=True)]
+        for k, v in s:
+            outstring = "{:d}".format(trunc(v)) +" "+ k + "\n"
+            f2.write(outstring)
+        f2.close()
 #--------------------------------------------------------------------------------------------
 
 ranker = RankedItems(inputList)
 
 ranker.printranks()
 
-matchNum = input("Enter how many matches to run: ")
-matchNum = int(matchNum)
+ranking = True
 
-for i in range(0, matchNum):
-    ranker.randmatch()
+while ranking == True:
+    matchNum = input("Enter how many matches to run (0 to exit): ")
+    matchNum = int(matchNum)
 
-ranker.printranks()
+    if matchNum == 0:
+        ranking = False
+        ranker.writeresults(fileName)
+    else:
+        for i in range(0, matchNum):
+            ranker.randmatch()
+        ranker.printranks()
