@@ -1,5 +1,6 @@
 __author__ = 'Matthew Peyton'
 import random
+from math import trunc
 
 intro = "Please type the name of the file of strings to be ranked, then hit enter.\nEach string must be on a new line."
 print(intro)
@@ -17,7 +18,7 @@ class RankedItems:
     K = None
 
     def __init__(self, initialList):
-        self.K = 40
+        self.K = 50
         self.rankItemPairs = dict.fromkeys(initialList, 2000)
 
     def randmatch(self):
@@ -60,9 +61,11 @@ class RankedItems:
         self.rankItemPairs[item2] = newR2
 
     def printranks(self):
+        d = self.rankItemPairs
         print("\nCurrent Ranks:")
-        for x in self.rankItemPairs:
-            print (x, self.rankItemPairs[x])
+        s = [(k, d[k]) for k in sorted(d, key=d.get, reverse=True)]
+        for k, v in s:
+            print("{:d}".format(trunc(v)), k)
 #--------------------------------------------------------------------------------------------
 
 ranker = RankedItems(inputList)
