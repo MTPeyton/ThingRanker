@@ -1,20 +1,78 @@
-__author__ = 'Matt'
+__author__ = 'Matthew Peyton'
+import random
 
 intro = "Please type the name of the file of strings to be ranked, then hit enter.\nEach string must be on a new line."
-
 print(intro)
 
 fileName = input("File Name: ")
 
 with open(fileName) as f:
-    numLines = sum(1 for _ in f)
+    inputList = f.readlines()
 
-inputList = [None] * numLines
+inputList = [x.strip() for x in inputList]
 
-f = open(fileName, 'r')
+#-------------------------------------------------------------------------------------------
+class RankedItems:
+    rankItemPairs = {}
+    K = None
 
-for line in f:
-    inputList.append(line)
+    def __init__(self, initialList):
+        self.K = 40
+        self.rankItemPairs = dict.fromkeys(initialList, 2000)
 
-for len in inputList:
-    print(inputList[len])
+    def randmatch(self):
+        item1 = random.choice(list(self.rankItemPairs.keys()))
+        item2 = random.choice(list(self.rankItemPairs.keys()))
+        while item1 == item2:
+            item2 = random.choice(list(self.rankItemPairs.keys()))
+
+        originalR1 = self.rankItemPairs[item1]
+        originalR2 = self.rankItemPairs[item2]
+
+        transformedR1 = 10**(originalR1 / 400)
+        transformedR2 = 10**(originalR2 / 400)
+
+        expectedR1 = transformedR1 / (transformedR1 + transformedR2)
+        expectedR2 = transformedR2 / (transformedR1 + transformedR2)
+
+        #Here is where you present the player with the choices and ask them to choose one
+        print("\n" + item1 +" vs. "+ item2)
+        choosing = True
+        while choosing == True:
+            choice = input("Type 1 or 2 to choose the winner, 3 if draw: ")
+            if choice == "1":
+                score1 = 1
+                score2 = 0
+                choosing = False
+            elif choice == "2":
+                score1 = 0
+                score2 = 1
+                choosing = False
+            elif choice == "3":
+                score1 = 0.5
+                score2 = 0.5
+                choosing = False
+
+        newR1 = originalR1 + (self.K * (score1 - expectedR1))
+        newR2 = originalR2 + (self.K * (score2 - expectedR2))
+
+        self.rankItemPairs[item1] = newR1
+        self.rankItemPairs[item2] = newR2
+
+    def printranks(self):
+        print("\nCurrent Ranks:")
+        for x in self.rankItemPairs:
+            print (x, self.rankItemPairs[x])
+#--------------------------------------------------------------------------------------------
+
+ranker = RankedItems(inputList)
+
+ranker.printranks()
+
+matchNum = input("Enter how many matches to run: ")
+matchNum = int(matchNum)
+
+for i in range(0, matchNum):
+    ranker.randmatch()
+
+ranker.printranks()
