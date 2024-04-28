@@ -25,7 +25,7 @@ class RankedItems:
         for k, v in initialPairs:
             if not v:
                 v = 2000
-            self.rankItemPairs[k] = v
+            self.rankItemPairs[k] = int(v)
 
     def randmatch(self):
         item1 = random.choice(list(self.rankItemPairs.keys()))
@@ -76,7 +76,7 @@ class RankedItems:
 
     def writeresults(self,oFile):
         d = self.rankItemPairs
-        f2 = open(oFile+" results.csv", "w")
+        f2 = open(oFile.strip('.csv') + "results.csv", "w")
 
         s = [(k, d[k]) for k in sorted(d, key=d.get, reverse=True)]
         for k, v in s:
