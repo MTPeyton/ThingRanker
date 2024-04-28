@@ -2,7 +2,7 @@ __author__ = 'Matthew Peyton'
 import random
 from math import trunc
 
-intro = "Please type the name of the file of strings to be ranked, then hit enter.\nEach string must be on a new line."
+intro = "Please type the name of the file of strings to be ranked, then hit enter.\nThe file should be a CSV of strings,initial ELO scores."
 print(intro)
 
 fileName = input("File Name: ")
@@ -12,16 +12,20 @@ with open(fileName) as f:
 
 f.close()
 
-inputList = [x.strip() for x in inputList]
+inputPairs = [x.strip().split(',') for x in inputList]
 
 #-------------------------------------------------------------------------------------------
 class RankedItems:
     rankItemPairs = {}
     K = None
 
-    def __init__(self, initialList):
+    def __init__(self, initialPairs):
         self.K = 50
-        self.rankItemPairs = dict.fromkeys(initialList, 2000)
+        self.rankItemPairs = {}
+        for k, v in initialPairs:
+            if not v:
+                v = 2000
+            self.rankItemPairs[k] = v
 
     def randmatch(self):
         item1 = random.choice(list(self.rankItemPairs.keys()))
@@ -72,16 +76,16 @@ class RankedItems:
 
     def writeresults(self,oFile):
         d = self.rankItemPairs
-        f2 = open(oFile+" results.txt", "w")
+        f2 = open(oFile+" results.csv", "w")
 
         s = [(k, d[k]) for k in sorted(d, key=d.get, reverse=True)]
         for k, v in s:
-            outstring = "{:d}".format(trunc(v)) +" "+ k + "\n"
+            outstring = k + "," + "{:d}".format(trunc(v)) + "\n"
             f2.write(outstring)
         f2.close()
 #--------------------------------------------------------------------------------------------
 
-ranker = RankedItems(inputList)
+ranker = RankedItems(inputPairs)
 
 ranker.printranks()
 
